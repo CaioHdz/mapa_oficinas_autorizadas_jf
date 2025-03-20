@@ -155,10 +155,9 @@
         };
 
         let map, routeLayer;
-        const technicians = ["SILVIO", "JHONY", "ISAAC", "JORGE"];
+        const technicians = ["SILVIO", "JHONNY", "ISAAC", "JORGE"];
 let technicianLocations = {};
 
-// Solicita a cidade de cada técnico ao usuário
 async function getTechnicianLocations() {
     for (const tech of technicians) {
         let city = prompt(`Digite a cidade atual de ${tech}:`);
@@ -175,7 +174,6 @@ async function getTechnicianLocations() {
     Object.assign(cities, technicianLocations);
 }
 
-// Executa antes de inicializar o mapa
 window.onload = async function () {
     await getTechnicianLocations();
     initMap();
