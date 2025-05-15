@@ -11,7 +11,6 @@ const cities = {
     "CLEISIOMAR - FORMOSA-GO": { lat: -15.5636, lng: -47.3375, contact: "(61) 99626-6404 - Cleisiomar" },
     "VALDIR MACHADO - CÁCERES-MT": { lat: -16.0765, lng: -57.6818, contact: "(65) 9610-1731 - Valdir Machado" },
     "NOCA - RAIZ - JUMIRIM-SP": { lat: -23.0888, lng: -47.7879, contact: "(15) 99782-7665 - Noca" },
-    "WEVOTECH - ITAPIRA-SP": { lat: -22.4357, lng: -46.8225, contact: "(19) 99251-7186 - William" },
     "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.1108168, lng: -44.2450372, contact: "(32) 9944-5164 - Fernando"},
     "PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" 
 
