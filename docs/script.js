@@ -11,7 +11,11 @@ const cities = {
     "CLEISIOMAR - FORMOSA-GO": { lat: -15.5636, lng: -47.3375, contact: "(61) 99626-6404 - Cleisiomar" },
     "VALDIR MACHADO - CÁCERES-MT": { lat: -16.0765, lng: -57.6818, contact: "(65) 9610-1731 - Valdir Machado" },
     "NOCA - RAIZ - JUMIRIM-SP": { lat: -23.0888, lng: -47.7879, contact: "(15) 99782-7665 - Noca" },
-    "WEVOTECH - ITAPIRA-SP": { lat: -22.4357, lng: -46.8225, contact: "(19) 99251-7186 - William" }
+    "WEVOTECH - ITAPIRA-SP": { lat: -22.4357, lng: -46.8225, contact: "(19) 99251-7186 - William" },
+    "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.1108168, lng: -44.2450372, contact: "(32) 9944-5164 - Fernando"},
+    "PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" 
+
+    }
 };
 
 let map, routeLayer;
@@ -50,10 +54,19 @@ function initMap() {
 
 async function calculateDistance() {
     const userCity = document.getElementById("cityInput").value;
+    const calculateBtn = document.getElementById("calculateButton");
+    const spinner = document.getElementById("spinner");
+    const statusDiv = document.getElementById("loading-status");
+
     if (!userCity) {
         alert("Por favor, digite uma cidade!");
         return;
     }
+
+    // UX: inicia loading
+    calculateBtn.disabled = true;
+    spinner.style.display = "inline-block";
+    statusDiv.textContent = "Calculando rotas...";
 
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(userCity)}`);
@@ -67,7 +80,11 @@ async function calculateDistance() {
         const userCoords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
         let results = [];
 
-        for (const [city, coords] of Object.entries(cities)) {
+        const entries = Object.entries(cities);
+        for (let i = 0; i < entries.length; i++) {
+            const [city, coords] = entries[i];
+            statusDiv.textContent = `Calculando rota ${i + 1} de ${entries.length}...`;
+
             const distanceData = await fetchRouteDistance(userCoords, coords);
             if (distanceData) {
                 results.push({
@@ -75,16 +92,22 @@ async function calculateDistance() {
                     distance: distanceData.distance,
                     duration: distanceData.duration,
                     coords,
-                    contact: cities[city].contact
+                    contact: coords.contact
                 });
             }
         }
 
         results.sort((a, b) => a.distance - b.distance);
+        statusDiv.textContent = `${results.length} técnicos encontrados`;
         displayResults(userCoords, results);
+
     } catch (error) {
         alert("Erro ao buscar a cidade ou calcular as rotas.");
         console.error(error);
+    } finally {
+        // UX: encerra loading
+        spinner.style.display = "none";
+        calculateBtn.disabled = false;
     }
 }
 
@@ -170,3 +193,21 @@ document.getElementById("cityInput").addEventListener("keydown", event => {
     }
 });
 document.getElementById("loadTechniciansButton").addEventListener("click", getTechnicianLocationsFromInputs);
+document.addEventListener("DOMContentLoaded", () => {
+    const reveals = document.querySelectorAll(".reveal");
+
+    function revealOnScroll() {
+        for (const el of reveals) {
+            const windowHeight = window.innerHeight;
+            const elementTop = el.getBoundingClientRect().top;
+            const revealPoint = 150;
+
+            if (elementTop < windowHeight - revealPoint) {
+                el.classList.add("active");
+            }
+        }
+    }
+
+    window.addEventListener("scroll", revealOnScroll);
+    revealOnScroll(); // caso já esteja visível no carregamento
+});
