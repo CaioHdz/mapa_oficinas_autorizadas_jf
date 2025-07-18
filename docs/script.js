@@ -2,7 +2,7 @@ const cities = {
     "TH TRATORES - SÃO JOSÉ DO RIO PRETO-SP": { lat: -20.811, lng: -49.376, contact: "17 98159-0002 - Thiago" },
     "PROVIDÊNCIA - PASSOS-MG": { lat: -20.719, lng: -46.609, contact: "35 9981-6209 - Mateus" },
     //"JVL - SÃO JOÃO DEL REI-MG": { lat: -21.136, lng: -44.261, contact: "37 9923-5958 - Van" },
-    //"JVL - BOM DESPACHO-MG": { lat: -19.736, lng: -45.252, contact: "37 9923-5958 - Van" },
+    "EDINHO- BOM DESPACHO-MG": { lat: -19.736, lng: -45.252, contact: "37 99667-7474 - Edinho" },
     "AGRONATA - ITUIUTABA-MG": { lat: -18.973, lng: -49.462, contact: "34 9973-3338 - Flavio" },
     //"ROGÉRIO - MOCOCA-SP": { lat: -21.467, lng: -47.002, contact: "19 99316-4016 - Rogerio" },
     "JF MÁQUINAS - ITAPIRA-SP": { lat: -22.435, lng: -46.822, contact: "19 97167-8420 - Evandro" },
