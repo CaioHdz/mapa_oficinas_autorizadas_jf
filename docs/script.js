@@ -1,17 +1,18 @@
 const cities = {
-    "(000069) TH TRATORES - SÃO JOSÉ DO RIO PRETO-SP": { lat: -20.811, lng: -49.376, contact: "17 98159-0002 - Thiago" },
+    "(000069) TH TRATORES - SÃO JOSÉ DO RIO PRETO-SP": { lat: -20.84812032986367, lng: -49.376213235188864, contact: "17 98159-0002 - Thiago" }, 
     "(T00016) PROVIDÊNCIA - PASSOS-MG": { lat: -20.719, lng: -46.609, contact: "35 9981-6209 - Mateus" },
     //"JVL - SÃO JOÃO DEL REI-MG": { lat: -21.136, lng: -44.261, contact: "37 9923-5958 - Van" },
     "(000175) EDINHO- BOM DESPACHO-MG": { lat: -19.736, lng: -45.252, contact: "37 99667-7474 - Edinho" },
-    "(000023) AGRONATA - ITUIUTABA-MG": { lat: -18.973, lng: -49.462, contact: "34 9973-3338 - Flavio" },
+    "(000023) AGRONATA - ITUIUTABA-MG": { lat: -18.952717093136638, lng: -49.457231717922184, contact: "34 9973-3338 - Flavio" }, 
     //"ROGÉRIO - MOCOCA-SP": { lat: -21.467, lng: -47.002, contact: "19 99316-4016 - Rogerio" },
-    "JF MÁQUINAS - ITAPIRA-SP": { lat: -22.435, lng: -46.822, contact: "19 97167-8420 - Evandro" },
+    "JF MÁQUINAS - ITAPIRA-SP": { lat: -22.44642625792153, lng: -46.806167884398754, contact: "19 97167-8420 - Evandro" }, 
     "(000164) IRINEU LUNKES - ÁGUA BOA -MT": { lat: -14.051, lng: -52.160, contact: "66 9922-7939 - Irineu" },
     "(000176) LOURIVALDO - ITAPIRA-SP": { lat: -22.435, lng: -46.822, contact: "(19) 98136-5631 - Lourivaldo" },
-    "(000021) CLEISIOMAR - FORMOSA-GO": { lat: -15.5636, lng: -47.3375, contact: "(61) 99626-6404 - Cleisiomar" },
+    "(000021) CLEISIOMAR - FORMOSA-GO": { lat: -15.547143287229915, lng: -47.31774824423258, contact: "(61) 99626-6404 - Cleisiomar" }, 
     "VALDIR MACHADO - CÁCERES-MT": { lat: -16.0765, lng: -57.6818, contact: "(65) 9610-1731 - Valdir Machado" },
-    "(000020) NOCA - RAIZ - JUMIRIM-SP": { lat: -23.0888, lng: -47.7879, contact: "(15) 99782-7665 - Noca" },
-    "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.1108168, lng: -44.2450372, contact: "(32) 9944-5164 - Fernando"},
+    "(000020) NOCA - RAIZ - JUMIRIM-SP": { lat: -23.079400226188383, lng: -47.79320520355734, contact: "(15) 99782-7665 - Noca" },
+    "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.081089911296907, lng: -44.22460941895275, contact: "(32) 9944-5164 - Fernando"}, 
+    "(000180) - SODMEC - PARA DE MINAS - MG " : { lat: -19.828916513580793, lng: -44.62242964836367, contact:" (37) 9995-5774"},
     "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" 
 
     }
