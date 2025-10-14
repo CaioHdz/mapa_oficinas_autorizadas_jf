@@ -13,6 +13,7 @@ const cities = {
     "(000020) NOCA - RAIZ - JUMIRIM-SP": { lat: -23.079400226188383, lng: -47.79320520355734, contact: "(15) 99782-7665 - Noca" },
     "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.081089911296907, lng: -44.22460941895275, contact: "(32) 9944-5164 - Fernando"}, 
     "(000180) - SODMEC - PARA DE MINAS - MG " : { lat: -19.828916513580793, lng: -44.62242964836367, contact:" (37) 9995-5774"},
+    "(000019) - REAL MAQUINAS - BELO HORIZONTE" : { lat:-19.858247273683425, lgn: -43.90823783063609, contact: " (31) 9951-0031 - Eduardo"},
     "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" 
 
     }
