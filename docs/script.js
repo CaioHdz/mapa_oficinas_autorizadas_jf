@@ -4,7 +4,7 @@ const cities = {
     //"JVL - SÃO JOÃO DEL REI-MG": { lat: -21.136, lng: -44.261, contact: "37 9923-5958 - Van" },
     "(000175) EDINHO- BOM DESPACHO-MG": { lat: -19.736, lng: -45.252, contact: "37 99667-7474 - Edinho" },
     "(000023) AGRONATA - ITUIUTABA-MG": { lat: -18.952717093136638, lng: -49.457231717922184, contact: "34 9973-3338 - Flavio" }, 
-    //"ROGÉRIO - MOCOCA-SP": { lat: -21.467, lng: -47.002, contact: "19 99316-4016 - Rogerio" },
+    "(000019) - REAL MAQUINAS - BELO HORIZONTE" : { lat:-19.858247273683425, lgn: -43.90823783063609, contact: " (31) 9951-0031 - Eduardo"},
     "JF MÁQUINAS - ITAPIRA-SP": { lat: -22.44642625792153, lng: -46.806167884398754, contact: "19 97167-8420 - Evandro" }, 
     "(000164) IRINEU LUNKES - ÁGUA BOA -MT": { lat: -14.051, lng: -52.160, contact: "66 9922-7939 - Irineu" },
     "(000176) LOURIVALDO - ITAPIRA-SP": { lat: -22.435, lng: -46.822, contact: "(19) 98136-5631 - Lourivaldo" },
@@ -13,10 +13,8 @@ const cities = {
     "(000020) NOCA - RAIZ - JUMIRIM-SP": { lat: -23.079400226188383, lng: -47.79320520355734, contact: "(15) 99782-7665 - Noca" },
     "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.081089911296907, lng: -44.22460941895275, contact: "(32) 9944-5164 - Fernando"}, 
     "(000180) - SODMEC - PARA DE MINAS - MG " : { lat: -19.828916513580793, lng: -44.62242964836367, contact:" (37) 9995-5774"},
-    "(000019) - REAL MAQUINAS - BELO HORIZONTE" : { lat:-19.858247273683425, lgn: -43.90823783063609, contact: " (31) 9951-0031 - Eduardo"},
-    "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" 
-
-    }
+    
+    "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" }
 };
 
 let map, routeLayer;
