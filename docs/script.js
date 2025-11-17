@@ -18,7 +18,7 @@ const cities = {
 };
 
 let map, routeLayer;
-const technicians = ["SILVIO", "JHONNY", "ISAAC", "JORGE"];
+const technicians = ["SILVIO", "RICARDO", "ISAAC", "JORGE"];
 let technicianLocations = {};
 
 async function getTechnicianLocationsFromInputs() {
