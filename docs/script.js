@@ -3,6 +3,7 @@ const cities = {
     "(T00016) PROVIDÊNCIA - PASSOS-MG": { lat: -20.719, lng: -46.609, contact: "35 9981-6209 - Mateus" },
     //"JVL - SÃO JOÃO DEL REI-MG": { lat: -21.136, lng: -44.261, contact: "37 9923-5958 - Van" },
     "(000175) EDINHO- BOM DESPACHO-MG": { lat: -19.736, lng: -45.252, contact: "37 99667-7474 - Edinho" },
+    " J&G IMPLEMENTOS E PEÇAS LTDA": {lat :-19.779,lng: -47.963, contact: "34 99877-6777- Fernando"},
     "(000023) AGRONATA - ITUIUTABA-MG": { lat: -18.952717093136638, lng: -49.457231717922184, contact: "34 9973-3338 - Flavio" }, 
     "(000019) REAL MAQUINAS  - BELO HORIZONTE ": { lat: -19.8584383970395, lng: -43.908294174462426, contact: "31 9951-0031 - Eduardo" }, 
     "JF MÁQUINAS - ITAPIRA-SP": { lat: -22.44642625792153, lng: -46.806167884398754, contact: "19 97167-8420 - Evandro" }, 
