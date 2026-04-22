@@ -14,7 +14,10 @@ const cities = {
     "(000020) NOCA - RAIZ - JUMIRIM-SP": { lat: -23.079400226188383, lng: -47.79320520355734, contact: "(15) 99782-7665 - Noca" },
     "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.081089911296907, lng: -44.22460941895275, contact: "(32) 9944-5164 - Fernando"}, 
     "(000180) - SODMEC - PARA DE MINAS - MG " : { lat: -19.828916513580793, lng: -44.62242964836367, contact:" (37) 9995-5774"},
-    
+    "(000089) - FORGE IMPLEMENTOS - SANTA RITA CALDAS- MG " : { lat: -22.03338, lng: -46.34051, contact:" (35) 99902-8621- ANDERSON"},
+    "(000192) - J&G (IGARAPAVA) - UBERABA - MG " : { lat: -19.77943, lng: -47.96398, contact:" (34) 9877-6777- FERNANDO"},
+    "(000179) - MERCADÃO - RONDONOPOLIS  - MT " : { lat: -16.46547, lng: -54.65765, contact:" (66) 9969-9590- DIEGO"},
+    "(000040) - CRICO - ITAPIRA  - SP " : { lat: -22.45240, lng: -46.805598, contact:" (19) 97137-5641- VARTINHO"},
     "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" }
 };
 
