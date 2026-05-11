@@ -17,6 +17,7 @@ const cities = {
     "(000089) - FORGE IMPLEMENTOS - SANTA RITA CALDAS- MG " : { lat: -22.03338, lng: -46.34051, contact:" (35) 99902-8621- ANDERSON"},
     "(000192) - J&G (IGARAPAVA) - UBERABA - MG " : { lat: -19.77943, lng: -47.96398, contact:" (34) 9877-6777- FERNANDO"},
     "(000179) - MERCADÃO - RONDONOPOLIS  - MT " : { lat: -16.46547, lng: -54.65765, contact:" (66) 9969-9590- DIEGO"},
+    "(000180) - SODMEC -  PARÁ DE MINAS  - MG " : { lat: -19.82894, lng: -44.62254, contact:" (37)99995-5774 - DENIS"},
     "(000040) - CRICO - ITAPIRA  - SP " : { lat: -22.45240, lng: -46.805598, contact:" (19) 97137-5641- VARTINHO"},
     "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira" }
 };
