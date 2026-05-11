@@ -116,7 +116,16 @@ button:hover {
     box-shadow: 0 6px 18px rgba(255, 204, 0, 0.4);
 }
 
-ul {
+/* ============================================ */
+/* ESTILOS FALTANTES PARA RESULTADOS E LISTAS */
+/* ============================================ */
+
+/* Container de resultados */
+.results-container {
+    margin-top: 20px;
+}
+
+.results-list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -125,31 +134,238 @@ ul {
     background-color: #1a1a1a;
     overflow: hidden;
     box-shadow: inset 0 0 5px #000;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-li {
+/* Scrollbar personalizada */
+.results-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.results-list::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 4px;
+}
+
+.results-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.results-list::-webkit-scrollbar-thumb:hover {
+    background: #ffd633;
+}
+
+/* Itens de resultado */
+.result-item {
     padding: 15px 20px;
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-li:last-child {
+.result-item:last-child {
     border-bottom: none;
 }
 
-li:hover {
+.result-item:hover {
     background-color: var(--text-color);
     color: var(--background-color);
     transform: translateX(3px);
 }
 
-li.active {
-    background-color: var(--primary-color);
+.result-item:hover .result-content strong {
     color: var(--background-color);
-    font-weight: bold;
-    box-shadow: inset 0 0 5px #000;
 }
+
+.result-rank {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    color: var(--background-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.result-content {
+    flex: 1;
+}
+
+.result-content strong {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.result-distance, .result-time {
+    font-size: 13px;
+    display: inline-block;
+    margin-right: 15px;
+    opacity: 0.8;
+}
+
+/* ============================================ */
+/* ESTILOS PARA INPUTS DE TÉCNICOS */
+/* ============================================ */
+
+.technician-section {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: rgba(255, 204, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.technician-section h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.input-group {
+    margin-bottom: 12px;
+}
+
+.input-group label {
+    display: inline-block;
+    width: 80px;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.input-group input {
+    width: calc(100% - 90px);
+    display: inline-block;
+    margin: 0;
+    padding: 8px;
+}
+
+/* Botões com diferentes cores */
+.primary-button {
+    background: linear-gradient(135deg, var(--primary-color), #e6b800);
+}
+
+.secondary-button {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    margin-top: 10px;
+}
+
+.secondary-button:hover {
+    background: linear-gradient(135deg, #45a049, #3d8b40);
+}
+
+/* ============================================ */
+/* ESTILOS PARA CARD DE CONTATO */
+/* ============================================ */
+
+.contact-card {
+    margin-top: 30px;
+}
+
+.contact-card-content {
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    animation: fadeInUp 1.2s ease;
+}
+
+.contact-card-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.contact-card-content p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.contact-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+/* Botões específicos */
+.whatsapp-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #25D366;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: transform 0.2s;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.whatsapp-button:hover {
+    transform: scale(1.05);
+    background-color: #128C7E;
+}
+
+.share-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #25D366;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.share-button:hover {
+    transform: scale(1.05);
+    background-color: #128C7E;
+}
+
+.maps-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #4285F4;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.maps-button:hover {
+    transform: scale(1.05);
+    background-color: #3367D6;
+}
+
+/* ============================================ */
+/* ESTILOS PARA MAPA */
+/* ============================================ */
 
 #map {
     width: 100%;
@@ -157,25 +373,17 @@ li.active {
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
     transition: all 0.3s;
+    z-index: 1;
 }
 
 #map:hover {
     box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
 }
 
-.contact-info {
-    margin-top: 30px;
-    background-color: #1a1a1a;
-    padding: 18px;
-    border-radius: 12px;
-    font-size: 17px;
-    color: var(--text-hover-color);
-    text-align: center;
-    box-shadow: inset 0 0 10px rgba(255, 204, 0, 0.1);
-    animation: fadeInUp 1.2s ease;
-}
+/* ============================================ */
+/* ESTILOS PARA SPINNER E LOADING */
+/* ============================================ */
 
-/* Spinner refinado */
 #spinner svg {
     animation: spin 1s linear infinite;
     width: 50px;
@@ -190,15 +398,83 @@ li.active {
     }
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
+#loading-status {
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 6px;
+    background: rgba(255, 204, 0, 0.1);
+    text-align: center;
+    font-size: 14px;
+}
+
+/* ============================================ */
+/* ESTILOS PARA TOAST E BADGES */
+/* ============================================ */
+
+/* Tooltip de feedback */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 10000;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    animation: fadeInOut 2s ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+
+/* Indicador de rota compartilhada */
+.shared-route-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    z-index: 10000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    animation: slideIn 0.5s ease-out;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
     }
-    #map {
-        height: 300px;
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
+
+/* ============================================ */
+/* ESTILOS PARA SEÇÃO DE BUSCA */
+/* ============================================ */
+
+.search-section {
+    margin-bottom: 20px;
+}
+
+/* ============================================ */
+/* ESTILOS PARA REVEAL (ANIMAÇÃO) */
+/* ============================================ */
+
 .reveal {
     opacity: 0;
     transform: translateY(30px);
@@ -208,4 +484,183 @@ li.active {
 .reveal.active {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* ============================================ */
+/* RESPONSIVIDADE */
+/* ============================================ */
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    #map {
+        height: 300px;
+    }
+    
+    .contact-buttons {
+        flex-direction: column;
+    }
+    
+    .contact-buttons button,
+    .contact-buttons a {
+        width: 100%;
+    }
+    
+    .result-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .result-rank {
+        margin-bottom: 10px;
+    }
+    
+    .input-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .input-group label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .input-group input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .left-side, .right-side {
+        padding: 15px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .result-rank {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+}
+
+/* Ícones personalizados para o mapa */
+.custom-car-icon, .custom-flag-icon {
+    background: none;
+    border: none;
+    font-size: 28px;
+    text-align: center;
+    line-height: 1;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+}
+
+.custom-car-icon {
+    font-size: 32px;
+}
+
+.custom-flag-icon {
+    font-size: 28px;
+}
+
+/* Overlay para quando for rota compartilhada */
+#sharedOverlay {
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.overlay-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+    border: 1px solid var(--primary-color);
+}
+
+.overlay-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.overlay-content h3 {
+    color: white;
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.overlay-content p {
+    color: rgba(255,255,255,0.9);
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+#clearSharedRoute {
+    background: white;
+    color: #667eea;
+    margin-top: 10px;
+    width: auto;
+    display: inline-block;
+    padding: 8px 20px;
+}
+
+#clearSharedRoute:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+/* Modo bloqueado - quando rota compartilhada está ativa */
+.shared-mode-active .search-section {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.shared-mode-active #result {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.shared-mode-active .technician-section {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Ícones do mapa */
+.custom-car-icon, .custom-flag-icon, .custom-person-icon {
+    background: none;
+    border: none;
+    font-size: 32px;
+    text-align: center;
+    line-height: 1;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+}
+
+.custom-person-icon {
+    font-size: 32px;
+}
+
+/* Animação para o overlay */
+@keyframes slideInOverlay {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.overlay-hint {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    color: #ffcc00;
 }

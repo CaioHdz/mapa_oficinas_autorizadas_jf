@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Oficinas Autorizadas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Mapa de Oficinas Autorizadas - Encontre a Oficina Mais Próxima</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,46 +11,63 @@
 <body>
     <div class="container">
         <div class="left-side">
-            <h1>Mapa de Oficinas Autorizadas</h1>
-
-            <label for="cityInput">Digite a cidade do cliente:</label>
-            <input type="text" id="cityInput" placeholder="Ex: Belo Horizonte" aria-label="Digite a cidade">
-            <div id="loading-status" style="margin-top: 10px; font-weight: bold;"></div>
-            <div id="spinner" style="display:none; margin-top: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" style="margin:auto; background:none; display:block;" width="40" height="40" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-                  <circle cx="50" cy="50" r="32" stroke-width="8" stroke="#1e90ff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
-                    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"/>
-                  </circle>
-                </svg>
-              </div>
-              
-
-
-            <button id="calculateButton">Calcular</button>
-            <div id="result" role="region" aria-live="polite"></div>
-
-            <div id="technician-form" style="margin-top: 20px; padding: 15px; border-radius: 8px; background-color: var(--secondary-color); border: 1px solid var(--border-color);">
-                <h3 style="color: var(--primary-color); margin-top: 0;">Localização dos Técnicos Móveis</h3>
-                <div id="techInputs">
-                    <label for="city-SILVIO">Cidade de SILVIO:</label>
-                    <input type="text" id="city-SILVIO" placeholder="Ex: Uberaba"><br>
-
-                    <label for="city-RICARDO">Cidade de RICARDO:</label>
-                    <input type="text" id="city-RICARDO" placeholder="Ex: Patos de Minas"><br>
-
-                    <label for="city-ISAAC">Cidade de ISAAC:</label>
-                    <input type="text" id="city-ISAAC" placeholder="Ex: Lavras"><br>
-
-                    <label for="city-JORGE">Cidade de JORGE:</label>
-                    <input type="text" id="city-JORGE" placeholder="Ex: Araxá"><br>
+            <h1>🗺️ Mapa de Oficinas Autorizadas</h1>
+            
+            <div class="search-section" id="searchSection">
+                <label for="cityInput">📍 Digite a cidade do cliente:</label>
+                <input type="text" id="cityInput" placeholder="Ex: Belo Horizonte, São Paulo, Rio de Janeiro" aria-label="Digite a cidade">
+                
+                <button id="calculateButton" class="primary-button">🔍 Calcular Rotas</button>
+                
+                <div id="loading-status" style="margin-top: 10px; font-weight: bold; color: var(--text-color);"></div>
+                <div id="spinner" style="display:none; margin-top: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="margin:auto; background:none; display:block;" width="40" height="40" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                        <circle cx="50" cy="50" r="32" stroke-width="8" stroke="#1e90ff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
+                            <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"/>
+                        </circle>
+                    </svg>
                 </div>
-                <button type="button" id="loadTechniciansButton">Confirmar Localizações</button>
+            </div>
+
+            <!-- Overlay que bloqueia quando é rota compartilhada (SEM BOTÃO) -->
+            <div id="sharedOverlay" style="display: none;">
+                <div class="overlay-content">
+                    <span class="overlay-icon">🔗</span>
+                    <h3>📌 Visualizando Rota Compartilhada</h3>
+                    <p>Você está visualizando uma rota específica enviada por alguém.</p>
+
+                </div>
+            </div>
+
+            <div id="result" role="region" aria-live="polite" class="results-container"></div>
+
+            <div class="technician-section">
+                <h3>👨‍🔧 Localização dos Técnicos Móveis</h3>
+                <div id="techInputs">
+                    <div class="input-group">
+                        <label for="city-SILVIO">SILVIO:</label>
+                        <input type="text" id="city-SILVIO" placeholder="Cidade" aria-label="Cidade de Silvio">
+                    </div>
+                    <div class="input-group">
+                        <label for="city-RICARDO">RICARDO:</label>
+                        <input type="text" id="city-RICARDO" placeholder="Cidade" aria-label="Cidade de Ricardo">
+                    </div>
+                    <div class="input-group">
+                        <label for="city-ISAAC">ISAAC:</label>
+                        <input type="text" id="city-ISAAC" placeholder="Cidade" aria-label="Cidade de Isaac">
+                    </div>
+                    <div class="input-group">
+                        <label for="city-JORGE">JORGE:</label>
+                        <input type="text" id="city-JORGE" placeholder="Cidade" aria-label="Cidade de Jorge">
+                    </div>
+                </div>
+                <button type="button" id="loadTechniciansButton" class="secondary-button">✅ Confirmar Localizações</button>
             </div>
         </div>
 
         <div class="right-side">
-            <div id="map" style="height: 500px;" role="region" aria-label="Mapa interativo"></div>
-            <div id="contact-info" role="complementary" aria-live="polite"></div>
+            <div id="map" style="height: 500px; border-radius: 8px;" role="region" aria-label="Mapa interativo"></div>
+            <div id="contact-info" role="complementary" aria-live="polite" class="contact-card"></div>
         </div>
     </div>
 
