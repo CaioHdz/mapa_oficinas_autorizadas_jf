@@ -13,7 +13,6 @@ const cities = {
     "VALDIR MACHADO - CÁCERES-MT": { lat: -16.0765, lng: -57.6818, contact: "(65) 9610-1731 - Valdir Machado" },
     "(000020) NOCA - RAIZ - JUMIRIM-SP": { lat: -23.079400226188383, lng: -47.79320520355734, contact: "(15) 99782-7665 - Noca" },
     "EDUARTE - SÃO JOÃO DEL REI-MG": { lat: -21.081089911296907, lng: -44.22460941895275, contact: "(32) 9944-5164 - Fernando"}, 
-    "(000180) - SODMEC - PARA DE MINAS - MG " : { lat: -19.828916513580793, lng: -44.62242964836367, contact:" (37) 9995-5774"},
     "(000089) - FORGE IMPLEMENTOS - SANTA RITA CALDAS- MG " : { lat: -22.03338, lng: -46.34051, contact:" (35) 99902-8621- ANDERSON"},
     "(000192) - J&G (IGARAPAVA) - UBERABA - MG " : { lat: -19.77943, lng: -47.96398, contact:" (34) 9877-6777- FERNANDO"},
     "(000179) - MERCADÃO - RONDONOPOLIS  - MT " : { lat: -16.46547, lng: -54.65765, contact:" (66) 9969-9590- DIEGO"},
