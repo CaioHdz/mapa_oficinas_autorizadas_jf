@@ -22,22 +22,99 @@ const cities = {
     "(000149) PJM MANUTENÇÕES - ARAXÁ-MG": { lat: -19.5902, lng: -46.9438, contact: "(34) 9986-1524 - Pablo Oliveira"}
 };
 
-let map, routeLayer;
+let map;
+const routeMarkers = [];
+const routeLineSourceId = 'active-route';
+const routeLineLayerId = 'active-route-line';
+let routeLineClickHandler = null;
 const technicians = ["SILVIO", "RICARDO", "ISAAC", "JORGE"];
 let technicianLocations = {};
 let isSharedRouteMode = false; // Controle do modo rota compartilhada
+
+const iconPaths = {
+    pin: '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+    route: '<path d="M4 19V5m0 0 5 3 5-3 6 3v14l-6-3-5 3-5-3"/>',
+    car: '<path d="m5 11 1.5-4h11L19 11"/><path d="M3 11h18v7H3zM6 18v2m12-2v2M6 14h.01M18 14h.01"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>',
+    time: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    wrench: '<path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L15 12l-3-3 2.7-2.7Z"/>',
+    phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.4 2.8a2 2 0 0 1-.6 1.7L7.5 9.6a16 16 0 0 0 6 6l1.4-1.4a2 2 0 0 1 1.7-.6l2.8.4a2 2 0 0 1 1.6 1.9Z"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.7 6.8-4.4m-6.8 7 6.8 4"/>',
+    calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.1 0l3-3A5 5 0 0 0 13 2.9l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/>',
+    arrow: '<path d="M5 12h14m-7-7 7 7-7 7"/>'
+};
+
+function icon(name, className = '') {
+    return `<svg${className ? ` class="${className}"` : ''} viewBox="0 0 24 24" aria-hidden="true">${iconPaths[name] || iconPaths.pin}</svg>`;
+}
 
 
 // FUNÇÕES DE INICIALIZAÇÃO
 
 
 function initMap() {
-    map = L.map('map').setView([-20, -44], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(map);
-    routeLayer = L.layerGroup().addTo(map);
+    map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://tiles.openfreemap.org/styles/positron',
+        center: [-44, -20],
+        zoom: 5.5,
+        attributionControl: true
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+}
+
+function clearRouteLayers() {
+    routeMarkers.splice(0).forEach(marker => marker.remove());
+    const removeLine = () => {
+        if (map.getLayer(routeLineLayerId)) map.removeLayer(routeLineLayerId);
+        if (map.getSource(routeLineSourceId)) map.removeSource(routeLineSourceId);
+    };
+    if (map.isStyleLoaded()) removeLine();
+    else map.once('load', removeLine);
+}
+
+function addRouteMarker(lat, lng, markerType, label, open = false) {
+    const element = document.createElement('div');
+    element.className = `custom-${markerType}-icon`;
+    element.innerHTML = icon(markerType === 'person' ? 'person' : 'car');
+    const popup = new maplibregl.Popup({ offset: 20 }).setHTML(`<strong>${escapeHtml(label)}</strong>`);
+    const marker = new maplibregl.Marker({ element, anchor: 'bottom' })
+        .setLngLat([lng, lat])
+        .setPopup(popup)
+        .addTo(map);
+    routeMarkers.push(marker);
+    if (open) marker.togglePopup();
+}
+
+function drawRouteLine(coordinates, distance, duration) {
+    const addLine = () => {
+        if (map.getLayer(routeLineLayerId)) map.removeLayer(routeLineLayerId);
+        if (map.getSource(routeLineSourceId)) map.removeSource(routeLineSourceId);
+        map.addSource(routeLineSourceId, {
+            type: 'geojson',
+            data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates } }
+        });
+        map.addLayer({
+            id: routeLineLayerId,
+            type: 'line',
+            source: routeLineSourceId,
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: { 'line-color': '#d3aa00', 'line-width': 5, 'line-opacity': 0.92 }
+        });
+        const bounds = coordinates.reduce((result, coordinate) => result.extend(coordinate), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+        map.fitBounds(bounds, { padding: 28, maxZoom: 12 });
+        if (routeLineClickHandler) map.off('click', routeLineLayerId, routeLineClickHandler);
+        routeLineClickHandler = event => {
+            new maplibregl.Popup({ closeButton: true })
+                .setLngLat(event.lngLat)
+                .setHTML(`<strong>Trajeto estimado</strong><br>Distância: ${distance.toFixed(0)} km<br>Tempo: ${formatTime(duration)}`)
+                .addTo(map);
+        };
+        map.on('click', routeLineLayerId, routeLineClickHandler);
+    };
+    if (map.isStyleLoaded()) addLine();
+    else map.once('load', addLine);
 }
 
 
@@ -59,26 +136,26 @@ async function getTechnicianLocationsFromInputs() {
                     technicianLocations[tech] = {
                         lat: parseFloat(data[0].lat),
                         lng: parseFloat(data[0].lon),
+                        city,
                         contact: `Contato: ${tech}`
                     };
-                    loadingStatus.textContent = `✅ ${tech} localizado em ${city}`;
+                    loadingStatus.textContent = `${tech} localizado em ${city}`;
                 } else {
-                    loadingStatus.textContent = `⚠️ Cidade de ${tech} não encontrada, ele será ignorado.`;
+                    loadingStatus.textContent = `Cidade de ${tech} não encontrada; ele será ignorado.`;
                 }
             } catch (error) {
                 console.error(`Erro ao buscar ${tech}:`, error);
-                loadingStatus.textContent = `❌ Erro ao localizar ${tech}`;
+                loadingStatus.textContent = `Erro ao localizar ${tech}.`;
             }
         }
     }
     
     Object.assign(cities, technicianLocations);
-    loadingStatus.textContent = "✅ Técnicos carregados com sucesso!";
+    loadingStatus.textContent = "Localizações dos técnicos atualizadas.";
     setTimeout(() => {
         loadingStatus.textContent = "";
     }, 2000);
     
-    initMap();
 }
 
 
@@ -88,7 +165,7 @@ async function getTechnicianLocationsFromInputs() {
 async function calculateDistance() {
     // Se estiver em modo rota compartilhada, não permite calcular
     if (isSharedRouteMode) {
-        showToastMessage("⚠️ Você está visualizando uma rota compartilhada. Clique em 'Calcular Nova Rota' para fazer uma nova busca.", "error");
+        showToastMessage("Esta rota compartilhada está em modo de visualização.", "error");
         return;
     }
     
@@ -98,13 +175,13 @@ async function calculateDistance() {
     const statusDiv = document.getElementById("loading-status");
 
     if (!userCity) {
-        showToastMessage("Por favor, digite uma cidade!", "error");
+        showToastMessage("Digite a cidade do atendimento.", "error");
         return;
     }
 
     calculateBtn.disabled = true;
     spinner.style.display = "inline-block";
-    statusDiv.textContent = "🔍 Buscando cidade...";
+    statusDiv.textContent = "Buscando cidade...";
 
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(userCity)}&limit=1`);
@@ -116,12 +193,13 @@ async function calculateDistance() {
         }
 
         const userCoords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        window.currentClientCity = userCity;
         let results = [];
 
         const entries = Object.entries(cities);
         for (let i = 0; i < entries.length; i++) {
             const [city, coords] = entries[i];
-            statusDiv.textContent = `🔄 Calculando rota ${i + 1} de ${entries.length}: ${city.substring(0, 30)}...`;
+            statusDiv.textContent = `Calculando trajeto ${i + 1} de ${entries.length}: ${city.substring(0, 30)}...`;
 
             const distanceData = await fetchRouteDistance(userCoords, coords);
             if (distanceData) {
@@ -138,7 +216,7 @@ async function calculateDistance() {
         }
 
         results.sort((a, b) => a.distance - b.distance);
-        statusDiv.textContent = `✅ ${results.length} oficinas encontradas`;
+        statusDiv.textContent = `${results.length} opções encontradas`;
         displayResults(userCoords, results);
 
     } catch (error) {
@@ -182,32 +260,43 @@ async function fetchRouteDistance(start, end) {
 function displayResults(userCoords, results) {
     const resultDiv = document.getElementById("result");
     if (results.length === 0) {
-        resultDiv.innerHTML = "<p>Nenhuma oficina encontrada.</p>";
+        resultDiv.innerHTML = `<div class="empty-state"><strong>Nenhuma opção encontrada</strong><p>Tente outra cidade ou confira a grafia informada.</p></div>`;
         return;
     }
     
     resultDiv.innerHTML = `
-        <h3>📋 Oficinas mais próximas (${results.length} encontradas)</h3>
+        <h3>Opções mais próximas <span class="result-count">${results.length}</span></h3>
         <ul class="results-list">
             ${results.map((result, index) => `
-                <li class="result-item" onclick="showRoute(${userCoords.lat}, ${userCoords.lng}, ${result.coords.lat}, ${result.coords.lng}, 
-                '${escapeHtml(result.city)}', ${result.distance}, ${result.duration})">
+                <li class="result-item" role="button" tabindex="0" data-result-index="${index}">
                     <div class="result-rank">#${index + 1}</div>
                     <div class="result-content">
                         <strong>${escapeHtml(result.city)}</strong><br>
-                        <span class="result-distance">🚗 ${result.distance.toFixed(2)} km</span>
-                        <span class="result-time">⏱️ ${result.duration.toFixed(2)} h</span>
+                        <span class="result-distance">${icon('car')} ${result.distance.toFixed(0)} km</span>
+                        <span class="result-time">${icon('time')} ${formatTime(result.duration)}</span>
                     </div>
+                    ${icon('arrow', 'result-arrow')}
                 </li>
             `).join('')}
         </ul>
     `;
+
+    resultDiv.querySelectorAll('[data-result-index]').forEach(item => {
+        const selectResult = () => {
+            resultDiv.querySelectorAll('.result-item').forEach(row => row.classList.remove('is-selected'));
+            item.classList.add('is-selected');
+            const result = results[Number(item.dataset.resultIndex)];
+            showRoute(userCoords.lat, userCoords.lng, result.coords.lat, result.coords.lng, result.city, result.distance, result.duration);
+        };
+        item.addEventListener('click', selectResult);
+        item.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectResult(); }
+        });
+    });
 }
 
-// FUNÇÃO CORRIGIDA: Com ícone de pessoa (🧑‍🔧) em vez de bandeira
 async function showRoute(lat1, lng1, lat2, lng2, cityName, distance = null, duration = null) {
-    // Mostrar loading
-    showToastMessage("🔄 Calculando rota...", "info");
+    showToastMessage("Calculando trajeto...", "info");
     
     // Se não recebeu distância (caso do link compartilhado), calcula agora
     let finalDistance = distance;
@@ -236,44 +325,16 @@ async function showRoute(lat1, lng1, lat2, lng2, cityName, distance = null, dura
         duration: finalDuration
     };
     
-    routeLayer.clearLayers();
-
-    // Ícone de carro para a oficina
-    const carIcon = L.divIcon({
-        html: '🚗',
-        iconSize: [32, 32],
-        className: 'custom-car-icon'
-    });
-    
-    // Ícone de pessoa para o cliente (CORRIGIDO - agora é pessoa)
-    const personIcon = L.divIcon({
-        html: '🧑‍🔧',  // Ícone de pessoa/técnico
-        iconSize: [32, 32],
-        className: 'custom-person-icon'
-    });
-    
-    const clientMarker = L.marker([lat1, lng1], { icon: personIcon }).addTo(routeLayer);
-    clientMarker.bindPopup("<strong>🧑‍🔧 Localização do Cliente</strong>").openPopup();
-    
-    const techMarker = L.marker([lat2, lng2], { icon: carIcon }).addTo(routeLayer);
-    techMarker.bindPopup(`<strong>🔧 ${escapeHtml(cityName)}</strong>`);
+    clearRouteLayers();
+    addRouteMarker(lat1, lng1, 'person', 'Localização do cliente', true);
+    addRouteMarker(lat2, lng2, 'car', cityName);
 
     // Buscar e desenhar a rota
     fetch(`https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?geometries=geojson&overview=full`)
         .then(response => response.json())
         .then(data => {
             if (data.routes && data.routes.length) {
-                const route = data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
-                const polyline = L.polyline(route, { color: '#2196F3', weight: 5, opacity: 0.8 });
-                polyline.addTo(routeLayer);
-                map.fitBounds(routeLayer.getBounds());
-                
-                // Adicionar informações na polilinha
-                polyline.bindPopup(`
-                    <strong>🚗 Rota de Carro</strong><br>
-                    📏 Distância: ${finalDistance.toFixed(2)} km<br>
-                    ⏱️ Tempo: ${finalDuration.toFixed(2)} h
-                `);
+                drawRouteLine(data.routes[0].geometry.coordinates, finalDistance, finalDuration);
             }
         })
         .catch(error => console.error("Erro ao desenhar rota:", error));
@@ -285,23 +346,33 @@ async function showRoute(lat1, lng1, lat2, lng2, cityName, distance = null, dura
         const phoneNumbers = rawContact.match(/\d+/g);
         const phoneNumber = phoneNumbers ? phoneNumbers.join('') : '';
         
+        const isMobileTechnician = technicians.includes(cityName);
+        const locationLabel = isMobileTechnician ? 'Técnico móvel' : 'Oficina autorizada';
         document.getElementById("contact-info").innerHTML = `
             <div class="contact-card-content">
-                <h3>🔧 Oficina Selecionada</h3>
-                <p><strong>👤 Nome:</strong> ${escapeHtml(cityName)}</p>
-                <p><strong>🚗 Distância:</strong> ${finalDistance.toFixed(2)} km</p>
-                <p><strong>⏱️ Tempo estimado:</strong> ${finalDuration.toFixed(2)} h (${formatTime(finalDuration)})</p>
-                <p><strong>📞 Contato:</strong> ${escapeHtml(rawContact)}</p>
-                <div class="contact-buttons">
-                    ${phoneNumber ? `<a href="https://wa.me/55${phoneNumber}" target="_blank" class="whatsapp-button">💬 Chamar no WhatsApp</a>` : ''}
-                    <button onclick="shareRoute()" class="share-button">📤 Compartilhar Rota</button>
-                    <button onclick="openGoogleMaps(${lat1}, ${lng1}, ${lat2}, ${lng2})" class="maps-button">🗺️ Abrir no Google Maps</button>
+                <div class="contact-heading">
+                    <span class="contact-heading-icon">${icon(isMobileTechnician ? 'person' : 'wrench')}</span>
+                    <span><h3>${escapeHtml(cityName)}</h3><span class="contact-subtitle">${locationLabel}</span></span>
                 </div>
+                <div class="contact-details">
+                    <div class="detail-item"><span class="detail-label">Distância</span><span class="detail-value">${finalDistance.toFixed(0)} km</span></div>
+                    <div class="detail-item"><span class="detail-label">Tempo estimado</span><span class="detail-value">${formatTime(finalDuration)}</span></div>
+                    <div class="detail-item" style="grid-column:1/-1"><span class="detail-label">Contato</span><span class="detail-value">${escapeHtml(rawContact)}</span></div>
+                </div>
+                <div class="contact-buttons">
+                    ${phoneNumber ? `<a href="https://wa.me/55${phoneNumber}" target="_blank" rel="noopener" class="action-link whatsapp-button">${icon('phone')} WhatsApp</a>` : ''}
+                    <button type="button" onclick="shareRoute()" class="action-link share-button">${icon('share')} Compartilhar</button>
+                    <button type="button" onclick="openGoogleMaps(${lat1}, ${lng1}, ${lat2}, ${lng2})" class="action-link maps-button">${icon('route')} Google Maps</button>
+                </div>
+                ${renderAppointmentForm(cityName, isMobileTechnician)}
             </div>
         `;
+        document.getElementById('calendarBookingButton')?.addEventListener('click', () => {
+            createCalendarEvent(cityName, isMobileTechnician, rawContact, finalDistance, finalDuration);
+        });
     }
     
-    showToastMessage(`✅ Rota calculada: ${finalDistance.toFixed(2)} km`, "success");
+    showToastMessage(`Trajeto calculado: ${finalDistance.toFixed(0)} km`, "success");
 }
 
 // Função auxiliar para formatar tempo
@@ -312,6 +383,85 @@ function formatTime(hours) {
         return `${h}h ${m}min`;
     }
     return `${m}min`;
+}
+
+function defaultAppointmentDateTime() {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setMinutes(0, 0, 0);
+    date.setHours(date.getHours() + 1);
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 16);
+}
+
+function renderAppointmentForm(providerName, isMobileTechnician) {
+    return `
+        <section class="appointment" aria-labelledby="appointment-title">
+            <h4 id="appointment-title">${icon('calendar')} Reservar horário</h4>
+            <p class="appointment-provider">${isMobileTechnician ? 'Técnico selecionado' : 'Oficina selecionada'}: <strong>${escapeHtml(providerName)}</strong></p>
+            <div class="appointment-form">
+                <div><label for="appointmentDate">Data e horário</label><input id="appointmentDate" type="datetime-local" value="${defaultAppointmentDateTime()}" required></div>
+                <div><label for="appointmentDuration">Duração prevista</label><select id="appointmentDuration" class="appointment-select"><option value="1">1 hora</option><option value="2">2 horas</option><option value="3">3 horas</option><option value="4">4 horas</option></select></div>
+                <div class="wide"><label for="appointmentCustomer">Cliente (opcional)</label><input id="appointmentCustomer" type="text" placeholder="Nome do cliente"></div>
+                <div class="wide"><label for="appointmentLocation">Local do atendimento</label><input id="appointmentLocation" type="text" value="${escapeHtml(window.currentClientCity || '')}" placeholder="Endereço ou cidade do cliente"></div>
+                <div class="wide"><label for="appointmentDetails">Serviço solicitado</label><textarea id="appointmentDetails" placeholder="Descreva brevemente o serviço"></textarea></div>
+            </div>
+            <button type="button" id="calendarBookingButton" class="button appointment-submit">${icon('calendar')} Abrir Google Agenda e reservar</button>
+            <p class="calendar-note">O evento abre preenchido na sua conta Google. Revise e salve; isso não confirma a disponibilidade do técnico.</p>
+        </section>`;
+}
+
+function createCalendarEvent(providerName, isMobileTechnician, providerContact, distance, estimatedDuration) {
+    const startInput = document.getElementById('appointmentDate');
+    if (!startInput || !startInput.value) {
+        showToastMessage('Escolha a data e o horário do atendimento.', 'error');
+        startInput?.focus();
+        return;
+    }
+    const start = new Date(startInput.value);
+    if (Number.isNaN(start.getTime()) || start.getTime() < Date.now()) {
+        showToastMessage('Escolha um horário futuro para o atendimento.', 'error');
+        startInput.focus();
+        return;
+    }
+    const duration = Number(document.getElementById('appointmentDuration').value || 1);
+    const end = new Date(start.getTime() + duration * 60 * 60 * 1000);
+    const customer = document.getElementById('appointmentCustomer').value.trim();
+    const location = document.getElementById('appointmentLocation').value.trim();
+    const service = document.getElementById('appointmentDetails').value.trim();
+    const formatCalendarDate = date => [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0')
+    ].join('') + 'T' + [
+        String(date.getHours()).padStart(2, '0'),
+        String(date.getMinutes()).padStart(2, '0'),
+        '00'
+    ].join('');
+    const title = `${isMobileTechnician ? 'Atendimento técnico' : 'Serviço em oficina'} - ${providerName}${customer ? ` - ${customer}` : ''}`;
+    const details = [
+        `${isMobileTechnician ? 'Técnico' : 'Oficina'} selecionado(a): ${providerName}`,
+        isMobileTechnician && technicianLocations[providerName]?.city ? `Base atual do técnico: ${technicianLocations[providerName].city}` : '',
+        `Contato: ${providerContact}`,
+        `Trajeto estimado: ${Number(distance).toFixed(0)} km, ${formatTime(Number(estimatedDuration))}`,
+        service ? `Serviço: ${service}` : '',
+        'Agendamento criado pelo localizador de oficinas autorizadas.'
+    ].filter(Boolean).join('\n');
+    const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: title,
+        dates: `${formatCalendarDate(start)}/${formatCalendarDate(end)}`,
+        details,
+        location,
+        ctz: 'America/Sao_Paulo'
+    });
+    const calendarUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
+    const calendarWindow = window.open(calendarUrl, '_blank');
+    if (calendarWindow) {
+        calendarWindow.opener = null;
+    } else {
+        window.location.assign(calendarUrl);
+    }
 }
 
 function openGoogleMaps(lat1, lng1, lat2, lng2) {
@@ -337,7 +487,7 @@ function generateShareableLink(userLat, userLng, techLat, techLng, cityName) {
 
 async function shareRoute() {
     if (!window.currentRoute) {
-        showToastMessage('❌ Nenhuma rota ativa para compartilhar', 'error');
+        showToastMessage('Nenhuma rota ativa para compartilhar.', 'error');
         return;
     }
     
@@ -356,7 +506,7 @@ async function shareRoute() {
                 text: `Rota para ${window.currentRoute.cityName} - ${window.currentRoute.distance.toFixed(2)} km`,
                 url: shareUrl
             });
-            showToastMessage('✅ Rota compartilhada com sucesso!', 'success');
+            showToastMessage('Rota compartilhada com sucesso.', 'success');
         } catch (err) {
             if (err.name !== 'AbortError') {
                 await copyToClipboard(shareUrl);
@@ -370,7 +520,7 @@ async function shareRoute() {
 async function copyToClipboard(text) {
     try {
         await navigator.clipboard.writeText(text);
-        showToastMessage('✅ Link copiado! Envie para quem quiser', 'success');
+        showToastMessage('Link copiado. Envie para quem quiser.', 'success');
     } catch (err) {
         const textarea = document.createElement('textarea');
         textarea.value = text;
@@ -380,7 +530,7 @@ async function copyToClipboard(text) {
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        showToastMessage('✅ Link copiado! Envie para quem quiser', 'success');
+        showToastMessage('Link copiado. Envie para quem quiser.', 'success');
     }
 }
 
@@ -389,28 +539,8 @@ function showToastMessage(message, type = 'info') {
     if (existingToast) existingToast.remove();
     
     const toast = document.createElement('div');
-    toast.className = 'toast-message';
+    toast.className = `toast-message${type === 'error' ? ' toast-error' : type === 'success' ? ' toast-success' : ''}`;
     toast.textContent = message;
-    
-    let bgColor = '#333';
-    if (type === 'error') bgColor = '#f44336';
-    if (type === 'success') bgColor = '#4CAF50';
-    if (type === 'info') bgColor = '#2196F3';
-    
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${bgColor};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        z-index: 10000;
-        font-weight: bold;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        animation: fadeInOut 2s ease-in-out;
-    `;
     
     document.body.appendChild(toast);
     
@@ -492,7 +622,7 @@ function loadRouteFromURL() {
         const now = Date.now();
         const hoursSinceCreated = (now - routeData.timestamp) / (1000 * 60 * 60);
         if (hoursSinceCreated > 24) {
-            showToastMessage('⚠️ Este link de rota expirou (mais de 24h)', 'error');
+            showToastMessage('Este link de rota expirou (mais de 24 horas).', 'error');
             return false;
         }
         
@@ -517,17 +647,12 @@ function loadRouteFromURL() {
                 null   // null para forçar cálculo
             );
             
-            setTimeout(() => {
-                if (routeLayer && routeLayer.getBounds && routeLayer.getBounds().isValid()) {
-                    map.fitBounds(routeLayer.getBounds());
-                }
-            }, 1000);
         }, 500);
         
         return true;
     } catch (error) {
         console.error('Erro ao carregar rota compartilhada:', error);
-        showToastMessage('❌ Link de rota inválido', 'error');
+        showToastMessage('Link de rota inválido.', 'error');
         return false;
     }
 }
@@ -538,21 +663,7 @@ function showSharedRouteBadge(cityName) {
     
     const badge = document.createElement('div');
     badge.className = 'shared-route-badge';
-    badge.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 12px 18px;
-        border-radius: 12px;
-        font-weight: bold;
-        z-index: 10000;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        animation: slideIn 0.5s ease-out;
-        font-size: 14px;
-    `;
-    badge.innerHTML = `🔗 Rota Compartilhada<br><small style="opacity:0.9">${escapeHtml(cityName)}</small>`;
+    badge.innerHTML = `${icon('link')} Rota compartilhada<br><small style="opacity:0.9">${escapeHtml(cityName)}</small>`;
     document.body.appendChild(badge);
     
     setTimeout(() => {
